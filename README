@@ -1,5 +1,7 @@
 sparsehc: Memory-efficient hierarchical clustering
 
+Require:
+	sudo apt-get install libboost-graph-dev
 Compile:
 
 	From Eclipse: Add the whole downloaded project to workspace and build
@@ -28,5 +30,3 @@ Data:
 
 	To randomly generate pairwise Euclidean distance matrices of different sizes and dimensions:
 	https://bitbucket.org/ngthuydiem/simmat
-	
-		
