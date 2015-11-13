@@ -11,6 +11,7 @@
 #include <vector>
 #include <cmath>
 #include <iostream>
+#include <limits>
 using namespace std;
 
 #define EPSILON 1.0e-6
@@ -47,6 +48,22 @@ struct Element {
 		} else
 			return value < e.value;
 	}
+	inline bool operator == (const Element& b) const
+	{
+	    return value == b.value;
+	}
+	static Element min_value()
+	{
+	    return Element(std::numeric_limits<uint>::min(),
+			   std::numeric_limits<uint>::min(),
+			   std::numeric_limits<float>::min());
+	}
+	static Element max_value()
+	{
+	    return Element(std::numeric_limits<uint>::max(),
+			   std::numeric_limits<uint>::max(),
+			   std::numeric_limits<float>::max());
+	}
 
 	static size_t size() {
 		return sizeof(uint) * 2 + sizeof(float);
@@ -56,6 +73,7 @@ struct Element {
 		fprintf(stderr, "%u\t%u\t%f\n", row, col, value);
 	}
 };
+
 
 //----------------------------------------------------------------------------------------------------
 

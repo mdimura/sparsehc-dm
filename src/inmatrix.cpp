@@ -7,22 +7,29 @@
 
 #include "inmatrix.h"
 
-InMatrix::InMatrix(const char* filename, uint numPoints, float threshold) :
-		Matrix(numPoints, threshold) {
-	file = fopen(filename, "rb");
-	if (!file)
-		EXIT_MSG("Cannot open input file!");
+InMatrix::InMatrix(unsigned numpoints, const string cachefile,
+		   const string cacheOptions, unsigned long ramUse):sorter(Cmp(),ramUse) {
 
-	// get length of file:
-	pos = 0;
-	fullyLoaded = false;
+	//set Matrix::threshold, numPoints
+	stxxl::config * cfg = stxxl::config::get_instance();
+	unsigned long diskSize=numpoints?12L*numpoints*(numpoints-1)/2:2L*1024L*1024L*1024L;
+	stxxl::disk_config disk1(cachefile, diskSize, cacheOptions);
+	//disk1.direct = stxxl::disk_config::DIRECT_OFF;
+	cfg->add_disk(disk1);
 }
 
 bool InMatrix::getNext(uint &row, uint &col, float &value) {
-	if (fscanf(file, "%u %u %f", &row, &col, &value) == 3)
+	if (!sorter.empty()) {
+		Element e=*sorter;
+		row=e.row;
+		col=e.col;
+		value=e.value;
+		++sorter;
 		return true;
-	else
+	}
+	else {
 		return false;
+	}
 }
 
 Element* InMatrix::getNext() {
@@ -41,16 +48,17 @@ bool InMatrix::loadElements() {
 	this->clear();
 	pos = 0;
 
-	uint row = 0, col = 0, size = 0;
-	float value = 0.0f;
+	uint size = 0;
+	Element e;
 
-	while (!feof(file) && !fullyLoaded && size < 4096) {
-		if (fscanf(file, "%u %u %f", &row, &col, &value) == 3 && value < threshold) {
-			this->push(row, col, value);
+	while (!sorter.empty() && size < 4096) {
+		e=*sorter;
+		++sorter;
+		if ( e.value < threshold ) {
+			this->push(e.row, e.col, e.value);
 			++size;
 		} else {
-			fprintf(stderr, "Stop at: %u %u %f\n", row, col, value);
-			fullyLoaded = true;
+			fprintf(stderr, "Stop at: %u %u %f\n", e.row, e.col, e.value);
 		}
 	}
 

@@ -9,7 +9,20 @@
 #include "averagecluster.h"
 #include "completecluster.h"
 #include "singlecluster.h"
-
+inline float bad_rand()
+{
+	static std::random_device rd;
+	static std::minstd_rand re(rd());
+	static std::uniform_real_distribution<float> unif(0.0f,20.0f);
+	static unsigned i=0;
+	static float last=unif(re);
+	if(++i%2==0) {
+	  last*=0.95;
+	} else {
+	  last=unif(re);
+	}
+	return last;
+}
 ////////////////////////////////////////////////////////////////////////////////
 // Program main
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,10 +30,7 @@ bool verbose = false;
 
 int main(int argc, char **argv) {
 
-	float threshold = 1.0f;
 	int linkage = 0;
-	uint numPoints = 10;
-	char matFileName[BUF_SIZE];
 	char treeFileName[BUF_SIZE];
 
 	Timer timer;
@@ -32,21 +42,9 @@ int main(int argc, char **argv) {
 
 	fprintf(stderr, "\n==== Extract options ====\n");
 
-	if (!extractOptions("--matrix=%s", matFileName, argc, argv))
-		EXIT_MSG("The path to input matrix file is required!");
-	printf("Input matrix: %s\n", matFileName);
-
 	if (!extractOptions("--tree=%s", treeFileName, argc, argv))
 		EXIT_MSG("The path to output tree file is required!");
 	printf("Output tree: %s\n", treeFileName);
-
-	if (!extractOptions("--size=%u", &numPoints, argc, argv))
-		EXIT_MSG("The number of data points is required!");
-	printf("Data points: %u\n", numPoints);
-
-	if (!extractOptions("--threshold=%f", &threshold, argc, argv))
-		EXIT_MSG("The distance threshold of the input matrix is required!");
-	printf("Threshold: %f\n", threshold);
 
 	char buf[BUF_SIZE];
 	if (extractOptions("--linkage=%s", buf, argc, argv)) {
@@ -69,20 +67,35 @@ int main(int argc, char **argv) {
 
 	fprintf(stderr, "\n==== Read distance matrix from file ====\n");
 	InMatrix * inMat;
-	inMat = new InMatrix(matFileName, numPoints, threshold);
+	inMat = new InMatrix();
+
+	std::cout<<"inserting values: "<<std::flush;
+	const unsigned num_points=40000;
+	for (unsigned p1 = 0; p1<num_points ; ++p1)
+	{
+	  for(unsigned p2 = p1+1; p2<num_points ; ++p2) {
+		  inMat->push(p1,p2,bad_rand());
+	  }
+	  if(p1%(num_points/10)==0) {
+	    std::cout<<p1*100/num_points<<"% "<<std::flush;
+	  }
+	}
+	std::cout<<std::endl;
+	inMat->sort();
+
 	inMat->stats();
 
 	fprintf(stderr, "\n==== Perform clustering ====\n");
 	Cluster * cluster = NULL;
 
 	if (linkage == 0)
-		cluster = new AverageCluster(numPoints, treeFileName);
+		cluster = new AverageCluster(inMat->getNumPints(), treeFileName);
 	else if (linkage == 1)
-		cluster = new CompleteCluster(numPoints, treeFileName);
+		cluster = new CompleteCluster(inMat->getNumPints(), treeFileName);
 	else if (linkage == 2)
-		cluster = new SingleCluster(numPoints, treeFileName);
+		cluster = new SingleCluster(inMat->getNumPints(), treeFileName);
 	else if (linkage == 3)
-		cluster = new AverageCluster(numPoints, treeFileName);
+		cluster = new AverageCluster(inMat->getNumPints(), treeFileName);
 
 	cluster->createLeaves();
 	PROFILE("cluster", cluster->clusterMatrix(inMat));
