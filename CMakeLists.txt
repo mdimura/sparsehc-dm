@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8.3)
+project (sparsehs-dm)
+include_directories(src)
+file(GLOB SOURCES "src/*.cpp")
+add_executable(sparsehs-dm ${SOURCES})
+add_definitions(-std=c++11)
