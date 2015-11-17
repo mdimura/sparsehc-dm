@@ -13,14 +13,14 @@ using namespace std;
 
 struct SingleCluster: public Cluster {
 
-	SingleCluster(uint matDim, char * treeName) :
-			Cluster(matDim, treeName) {
+	SingleCluster(uint matDim) :
+			Cluster(matDim) {
 	}
 
 	Vertex* createVertex(uint id);
 
 	// overrider super methods
-	void clusterMatrix(InMatrix * mat);
+	Dendrogram clusterMatrix(InMatrix * mat);
 };
 
 #endif /* MINCLUSTER_H_ */

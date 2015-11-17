@@ -19,13 +19,9 @@ void Vertex::updateAncestor(Vertex* ancestor) {
 
 //----------------------------------------------------------------------------------------------------
 
-Cluster::Cluster(uint n, char * treeName) :
-		numLeaves(n) {
+Cluster::Cluster(uint n) :
+		numLeaves(n),dendrogram(n){
 	// add the leaves into the final graph
-	phytree.open(treeName, ofstream::binary);
-	if (!phytree)
-		EXIT_MSG(treeName);
-	phytree.precision(5);
 }
 
 void Cluster::createLeaves() {
@@ -38,15 +34,10 @@ Cluster::~Cluster() {
 
 	for (uint i = 0; i < vertices.size(); ++i)
 		delete vertices[i];
-	phytree.close();
 
 }
 
 void Cluster::updateGraph(uint id1, uint id2, float dist) {
-
-	if (id1 < id2)
-		phytree << id1 + 1 << " " << id2 + 1 << " " << dist << endl;
-	else
-		phytree << id2 + 1 << " " << id1 + 1 << " " << dist << endl;
+		dendrogram.add(id1 ,id2 ,dist);
 }
 

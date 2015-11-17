@@ -14,7 +14,7 @@ Vertex* SingleCluster::createVertex(uint id) {
 
 //----------------------------------------------------------------------------------------------------
 
-void SingleCluster::clusterMatrix(InMatrix * mat) {
+Dendrogram SingleCluster::clusterMatrix(InMatrix * mat) {
 
 	uint newId = numLeaves, maxVertices = numLeaves * 2 - 1;
 	uint row, col;
@@ -47,4 +47,5 @@ void SingleCluster::clusterMatrix(InMatrix * mat) {
 	}
 
 	fprintf(stderr, "Finished! index = %u\n", mat->pos);
+	return dendrogram;
 }

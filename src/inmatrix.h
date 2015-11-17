@@ -46,7 +46,7 @@ struct InMatrix: public Matrix {
 	void push(uint row, uint col, float value) {
 		Element e(row,col,value);
 		sorter.push(e);
-		threshold=threshold<value?value:threshold;
+		threshold=threshold<value?nextafterf(value,value+100.0f):threshold;
 	}
 	void sort() {
 		sorter.sort();

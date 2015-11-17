@@ -68,8 +68,8 @@ struct AverageCluster: public Cluster {
 	float tempMax;
 	uint totalEdges;
 
-	AverageCluster(uint n, char * treeName) :
-			Cluster(n, treeName) {
+	AverageCluster(uint n) :
+			Cluster(n) {
 		totalEdges = 0;
 		tempMax = 0;
 	}
@@ -77,7 +77,7 @@ struct AverageCluster: public Cluster {
 	// overrider super methods
 	Vertex* createVertex(uint id);
 
-	void clusterMatrix(InMatrix * mat);
+	Dendrogram clusterMatrix(InMatrix * mat);
 
 	// current class methods
 	void merge(AverageVertex * v1, AverageVertex * v2, AverageVertex* v, float max);

@@ -12,6 +12,7 @@
 #include <list>
 #include <fstream>
 #include "inmatrix.h"
+#include "dendrogram.h"
 using namespace std;
 
 struct Vertex {
@@ -37,11 +38,12 @@ struct Cluster {
 protected:
 	vector<Vertex *> vertices;
 	uint numLeaves;
-
+	Dendrogram dendrogram;
 private:
-	ofstream phytree;
+	//ofstream phytree;
+
 public:
-	Cluster(uint n, char * treeName);
+	Cluster(uint n);
 
 	virtual ~Cluster();
 
@@ -52,7 +54,7 @@ public:
 	// overriden methods
 	virtual Vertex* createVertex(uint id) = 0;
 
-	virtual void clusterMatrix(InMatrix* mat) = 0;
+	virtual Dendrogram clusterMatrix(InMatrix* mat) = 0;
 
 	// non-overriden methods
 	void createLeaves();

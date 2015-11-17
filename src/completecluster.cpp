@@ -112,7 +112,7 @@ void CompleteCluster::printAllEdges() {
 	}
 }
 
-void CompleteCluster::clusterMatrix(InMatrix * mat) {
+Dendrogram CompleteCluster::clusterMatrix(InMatrix * mat) {
 
 	uint maxEdges = mat->numPoints; // maxNumEdges = num of links can be stored in RAM
 	uint newId = numLeaves;
@@ -127,7 +127,7 @@ void CompleteCluster::clusterMatrix(InMatrix * mat) {
 		v2 = reinterpret_cast<CompleteVertex*>(vertices[col]->ancestor);
 
 		if (v1 == v2)
-			return;
+			return dendrogram;
 
 		if (v1->id < v2->id) {
 			tempV = v1;
@@ -158,5 +158,6 @@ void CompleteCluster::clusterMatrix(InMatrix * mat) {
 
 	fprintf(stderr, "Finished! number of edges = %u. linear ratio: %.2f. quadratic ratio: %zu\n", maxEdges,
 			(double) maxEdges / mat->numPoints, mat->numElements / maxEdges);
+	return dendrogram;
 }
 

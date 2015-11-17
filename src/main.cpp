@@ -17,8 +17,11 @@ struct Point {
 		for(int i=0; i<3; i++) {
 			r[i]=unif(re);
 		}
-		for(int i=3; i<n; i++) {
+		for(int i=3; i<n-3; i++) {
 			r[i]=r[i-3]+0.1;
+		}
+		for(int i=n-3; i<n; i++) {
+			r[i]=unif(re);
 		}
 	}
 	static const unsigned n=3*150;
@@ -102,16 +105,16 @@ int main(int argc, char **argv) {
 	Cluster * cluster = NULL;
 
 	if (linkage == 0)
-		cluster = new AverageCluster(inMat.getNumPints(), treeFileName);
+		cluster = new AverageCluster(inMat.getNumPints());
 	else if (linkage == 1)
-		cluster = new CompleteCluster(inMat.getNumPints(), treeFileName);
+		cluster = new CompleteCluster(inMat.getNumPints());
 	else if (linkage == 2)
-		cluster = new SingleCluster(inMat.getNumPints(), treeFileName);
+		cluster = new SingleCluster(inMat.getNumPints());
 	else if (linkage == 3)
-		cluster = new AverageCluster(inMat.getNumPints(), treeFileName);
+		cluster = new AverageCluster(inMat.getNumPints());
 
 	cluster->createLeaves();
-	PROFILE("cluster", cluster->clusterMatrix(&inMat));
+	PROFILE("cluster", cluster->clusterMatrix(&inMat).print(treeFileName));
 
 	delete cluster;
 

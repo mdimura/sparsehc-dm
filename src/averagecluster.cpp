@@ -257,7 +257,7 @@ bool AverageCluster::getCandidate(float &minInexact, float &minExact, AverageVer
 	return (minExact < 1.0f) && (minExact < minInexact || fabsf(minExact - minInexact) < EPSILON);
 }
 
-void AverageCluster::clusterMatrix(InMatrix * mat) {
+Dendrogram AverageCluster::clusterMatrix(InMatrix * mat) {
 
 	uint maxEdges = mat->numPoints; // maxEdges = num of outEdges can be stored in RAM
 
@@ -315,5 +315,6 @@ void AverageCluster::clusterMatrix(InMatrix * mat) {
 
 	fprintf(stderr, "Finished! number of edges = %u. linear ratio: %.2f. quadratic ratio: %zu\n", maxEdges,
 			(double) maxEdges / mat->numPoints, mat->numElements / maxEdges);
+	return dendrogram;
 }
 

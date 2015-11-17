@@ -42,15 +42,15 @@ struct CompleteCluster: public Cluster {
 
 	uint totalEdges;
 
-	CompleteCluster(uint matDim, char * treeName) :
-			Cluster(matDim, treeName) {
+	CompleteCluster(uint matDim) :
+			Cluster(matDim) {
 		totalEdges = 0;
 	}
 
 	// overrider super methods
 	Vertex* createVertex(uint id);
 
-	void clusterMatrix(InMatrix * mat);
+	Dendrogram clusterMatrix(InMatrix * mat);
 
 	// current class methods
 	void merge(CompleteVertex * v1, CompleteVertex * v2, CompleteVertex *v);
