@@ -198,7 +198,7 @@ void AverageCluster::merge(AverageVertex * v1, AverageVertex * v2, AverageVertex
 
 	totalEdges = getNumEdges();
 }
-
+/*
 // absorb a TreeNode
 void AverageCluster::absorb(Element* e) {
 	AverageVertex *v1, *v2;
@@ -218,7 +218,7 @@ void AverageCluster::absorb(Element* e) {
 
 	totalEdges += (weight == 1);
 }
-
+*/
 // absorb a TreeNode
 void AverageCluster::absorb(uint row, uint col, float value) {
 	AverageVertex *v1, *v2;

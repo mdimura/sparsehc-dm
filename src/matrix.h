@@ -79,8 +79,6 @@ struct Element {
 
 struct Matrix {
 
-	vector<Element*> elements;
-
 	size_t numElements;
 	float threshold;
 	uint numPoints;
@@ -90,20 +88,15 @@ struct Matrix {
 	Matrix();
 
 	virtual ~Matrix() {
-		for (uint i = 0; i < elements.size(); ++i)
-			delete elements[i];
 	}
 
 	void clear() {
-		for (uint i = 0; i < elements.size(); ++i)
-			delete elements[i];
 		elements.clear();
 	}
 
-	Element* push(uint row, uint col, float dist) {
-		Element* e = new Element(row, col, dist);
+	void push(uint row, uint col, float dist) {
+		Element e(row, col, dist);
 		elements.push_back(e);
-		return e;
 	}
 
 	double sparsity() {
@@ -115,6 +108,11 @@ struct Matrix {
 	}
 
 	void stats();
+	size_t elementsCount() const {
+		return elements.size();
+	}
+private:
+	vector<Element> elements;
 };
 
 #endif /* MATRIX_H_ */

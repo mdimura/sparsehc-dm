@@ -32,7 +32,7 @@ bool InMatrix::getNext(uint &row, uint &col, float &value) {
 	}
 }
 
-Element* InMatrix::getNext() {
+/*Element* InMatrix::getNext() {
 	if (pos < elements.size())
 		return elements[pos++];
 	else {
@@ -41,7 +41,7 @@ Element* InMatrix::getNext() {
 		else
 			return NULL;
 	}
-}
+}*/
 
 bool InMatrix::loadElements() {
 

@@ -9,20 +9,28 @@
 #include "averagecluster.h"
 #include "completecluster.h"
 #include "singlecluster.h"
-inline float bad_rand()
-{
-	static std::random_device rd;
-	static std::minstd_rand re(rd());
-	static std::uniform_real_distribution<float> unif(0.0f,20.0f);
-	static unsigned i=0;
-	static float last=unif(re);
-	if(++i%2==0) {
-	  last*=0.95;
-	} else {
-	  last=unif(re);
+#include <Eigen/Dense>
+struct Point {
+	static std::minstd_rand re;
+	static std::uniform_real_distribution<float> unif;
+	Point() {
+		for(int i=0; i<3; i++) {
+			r[i]=unif(re);
+		}
+		for(int i=3; i<n; i++) {
+			r[i]=r[i-3]+0.1;
+		}
 	}
-	return last;
-}
+	static const unsigned n=3*150;
+	const float invn=3.0f/n;
+	Eigen::Matrix<float,n,1> r;
+	float rmsd(const Point& o) const {
+		return sqrt((r-o.r).squaredNorm()*invn);
+	}
+};
+std::minstd_rand Point::re(0);
+std::uniform_real_distribution<float> Point::unif(0.0f,100.0f);
+
 ////////////////////////////////////////////////////////////////////////////////
 // Program main
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,6 +54,12 @@ int main(int argc, char **argv) {
 		EXIT_MSG("The path to output tree file is required!");
 	printf("Output tree: %s\n", treeFileName);
 
+	unsigned num_points;
+	if (!extractOptions("-N=%u", &num_points, argc, argv)) {
+		num_points=10000;
+	}
+	printf("num_points: %u\n", num_points);
+
 	char buf[BUF_SIZE];
 	if (extractOptions("--linkage=%s", buf, argc, argv)) {
 		if (strcmp(buf, "average") == 0) {
@@ -66,41 +80,39 @@ int main(int argc, char **argv) {
 	initProfiler(1, "cluster");
 
 	fprintf(stderr, "\n==== Read distance matrix from file ====\n");
-	InMatrix * inMat;
-	inMat = new InMatrix();
+	InMatrix inMat(num_points,"sorter.tmp","syscall nodirect unlink",64*1024*1024);
 
+	std::vector<Point> points(num_points);
 	std::cout<<"inserting values: "<<std::flush;
-	const unsigned num_points=40000;
 	for (unsigned p1 = 0; p1<num_points ; ++p1)
 	{
-	  for(unsigned p2 = p1+1; p2<num_points ; ++p2) {
-		  inMat->push(p1,p2,bad_rand());
-	  }
-	  if(p1%(num_points/10)==0) {
-	    std::cout<<p1*100/num_points<<"% "<<std::flush;
-	  }
+		for(unsigned p2 = p1+1; p2<num_points ; ++p2) {
+			inMat.push(p1,p2,points[p1].rmsd(points[p2]));
+		}
+		if(p1%(num_points/10)==0) {
+			std::cout<<p1*100/num_points<<"% "<<std::flush;
+		}
 	}
 	std::cout<<std::endl;
-	inMat->sort();
+	inMat.sort();
 
-	inMat->stats();
+	inMat.stats();
 
 	fprintf(stderr, "\n==== Perform clustering ====\n");
 	Cluster * cluster = NULL;
 
 	if (linkage == 0)
-		cluster = new AverageCluster(inMat->getNumPints(), treeFileName);
+		cluster = new AverageCluster(inMat.getNumPints(), treeFileName);
 	else if (linkage == 1)
-		cluster = new CompleteCluster(inMat->getNumPints(), treeFileName);
+		cluster = new CompleteCluster(inMat.getNumPints(), treeFileName);
 	else if (linkage == 2)
-		cluster = new SingleCluster(inMat->getNumPints(), treeFileName);
+		cluster = new SingleCluster(inMat.getNumPints(), treeFileName);
 	else if (linkage == 3)
-		cluster = new AverageCluster(inMat->getNumPints(), treeFileName);
+		cluster = new AverageCluster(inMat.getNumPints(), treeFileName);
 
 	cluster->createLeaves();
-	PROFILE("cluster", cluster->clusterMatrix(inMat));
+	PROFILE("cluster", cluster->clusterMatrix(&inMat));
 
-	delete inMat;
 	delete cluster;
 
 	printProfilerStats(); // print profile statistics before exit

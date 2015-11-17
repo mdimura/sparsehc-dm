@@ -82,7 +82,7 @@ struct AverageCluster: public Cluster {
 	// current class methods
 	void merge(AverageVertex * v1, AverageVertex * v2, AverageVertex* v, float max);
 
-	void absorb(Element* e);
+	//void absorb(Element* e);
 	void absorb(uint row, uint col, float value);
 
 	bool getCandidate(float &minInexact, float &minExact, AverageVertex* &n);

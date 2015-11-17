@@ -50,7 +50,7 @@ struct InMatrix: public Matrix {
 	}
 	void sort() {
 		sorter.sort();
-		numPoints=sqrt(1L+sorter.size()*8L)/2L+1;
+		numPoints=(1L+sqrt(1L+sorter.size()*8L))/2L;
 	}
 	unsigned getNumPints() const {
 		return numPoints;
@@ -59,10 +59,10 @@ struct InMatrix: public Matrix {
 	bool loadElements();
 
 	bool isEmpty() {
-		return (pos >= elements.size() && sorter.empty());
+		return (pos >= elementsCount() && sorter.empty());
 	}
 
-	Element* getNext();
+	//Element* getNext();
 
 	bool getNext(uint &row, uint &col, float &value);
 private:

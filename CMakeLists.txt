@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project (sparsehs-dm)
+project (sparsehc-dm)
 
 find_package(STXXL REQUIRED)
 include_directories(${STXXL_INCLUDE_DIRS})
@@ -11,6 +11,6 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
 include_directories(src)
 file(GLOB SOURCES "src/*.cpp")
-add_executable(sparsehs-dm ${SOURCES})
-target_link_libraries(sparsehs-dm ${LIBS})
+add_executable(sparsehc-dm ${SOURCES})
+target_link_libraries(sparsehc-dm ${LIBS})
 add_definitions(-std=c++11)
