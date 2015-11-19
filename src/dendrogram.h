@@ -13,16 +13,19 @@
 #include <unordered_map>
 #include <fstream>
 class Dendrogram {
-private:
+public:
 	struct Link {
 		unsigned p1,p2;
 		float distance;
 		unsigned nump;
 	};
+private:
+
 	const unsigned numPoints;
 	std::vector<Link> links;
 	std::vector<unsigned> pointsCount; //number of points in the cluster
 public:
+
 	Dendrogram(unsigned numPoints):numPoints(numPoints)
 	{
 		links.reserve(numPoints-1);
@@ -36,6 +39,9 @@ public:
 		for(const Link& l:links) {
 			myfile<<l.p1<<' '<<l.p2<<' '<<l.distance<<' '<<l.nump<<'\n';
 		}
+	}
+	Link getLink(int i) const {
+		return links.at(i);
 	}
 };
 

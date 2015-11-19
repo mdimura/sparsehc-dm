@@ -156,8 +156,8 @@ Dendrogram CompleteCluster::clusterMatrix(InMatrix * mat) {
 			maxEdges *= 1.1f;
 	}
 
-	fprintf(stderr, "Finished! number of edges = %u. linear ratio: %.2f. quadratic ratio: %zu\n", maxEdges,
-			(double) maxEdges / mat->numPoints, mat->numElements / maxEdges);
+	/*fprintf(stderr, "Finished! number of edges = %u. linear ratio: %.2f. quadratic ratio: %zu\n", maxEdges,
+			(double) maxEdges / mat->numPoints, mat->numElements / maxEdges);*/
 	return dendrogram;
 }
 

@@ -26,3 +26,11 @@
 *.exe
 *.out
 *.app
+
+#QtCreator
+*.user
+build*/
+
+#Trajectory files
+examples/*.pdb
+examples/*.nc

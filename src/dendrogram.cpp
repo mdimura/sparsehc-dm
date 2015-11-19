@@ -1,10 +1,12 @@
 #include "dendrogram.h"
+#include <algorithm>
 
 void Dendrogram::add(unsigned p1, unsigned p2, float distance)
 {
 	Link l;
-	l.p1=p1;
-	l.p2=p2;
+	std::pair<unsigned,unsigned> p=std::minmax(p1,p2);
+	l.p1=p.first;
+	l.p2=p.second;
 	l.distance=distance;
 	l.nump=0;
 	l.nump+=p1>=numPoints?pointsCount.at(p1-numPoints):1;

@@ -313,8 +313,8 @@ Dendrogram AverageCluster::clusterMatrix(InMatrix * mat) {
 #endif
 	}
 
-	fprintf(stderr, "Finished! number of edges = %u. linear ratio: %.2f. quadratic ratio: %zu\n", maxEdges,
-			(double) maxEdges / mat->numPoints, mat->numElements / maxEdges);
+	/*fprintf(stderr, "Finished! number of edges = %u. linear ratio: %.2f. quadratic ratio: %zu\n", maxEdges,
+			(double) maxEdges / mat->numPoints, mat->numElements / maxEdges);*/
 	return dendrogram;
 }
 

@@ -46,6 +46,6 @@ Dendrogram SingleCluster::clusterMatrix(InMatrix * mat) {
 		updateGraph(v1->id, v2->id, value);
 	}
 
-	fprintf(stderr, "Finished! index = %u\n", mat->pos);
+	//fprintf(stderr, "Finished! index = %u\n", mat->pos);
 	return dendrogram;
 }

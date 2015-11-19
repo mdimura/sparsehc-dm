@@ -44,15 +44,27 @@ struct InMatrix: public Matrix {
 	}
 
 	void push(uint row, uint col, float value) {
-		Element e(row,col,value);
-		sorter.push(e);
-		threshold=threshold<value?nextafterf(value,value+100.0f):threshold;
+		push(Element(row,col,value));
 	}
+	void push(Element e) {
+		threshold=threshold<e.value?nextafterf(e.value,e.value+100.0f):threshold;
+		sorter.push(std::move(e));
+	}
+
+	/*void pushvec(std::vector<float> v,unsigned i) {
+		for(unsigned j=0; j<v.size(); ++j) {
+			Element e{i,j+i+1,std::move(v[j])};
+			threshold=threshold<e.value
+				  ?nextafterf(e.value,e.value+100.0f):threshold;
+			sorter.push(std::move(e));
+		}
+	}*/
 	void sort() {
 		sorter.sort();
 		numPoints=(1L+sqrt(1L+sorter.size()*8L))/2L;
 	}
 	unsigned getNumPints() const {
+
 		return numPoints;
 	}
 

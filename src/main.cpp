@@ -9,30 +9,28 @@
 #include "averagecluster.h"
 #include "completecluster.h"
 #include "singlecluster.h"
-#include <Eigen/Dense>
-struct Point {
-	static std::minstd_rand re;
-	static std::uniform_real_distribution<float> unif;
-	Point() {
-		for(int i=0; i<3; i++) {
-			r[i]=unif(re);
-		}
-		for(int i=3; i<n-3; i++) {
-			r[i]=r[i-3]+0.1;
-		}
-		for(int i=n-3; i<n; i++) {
-			r[i]=unif(re);
-		}
-	}
-	static const unsigned n=3*150;
-	const float invn=3.0f/n;
-	Eigen::Matrix<float,n,1> r;
-	float rmsd(const Point& o) const {
-		return sqrt((r-o.r).squaredNorm()*invn);
-	}
-};
-std::minstd_rand Point::re(0);
-std::uniform_real_distribution<float> Point::unif(0.0f,100.0f);
+#include <memory>
+#include <iostream>
+#include <chrono>
+template<typename T, typename ...Args>
+std::unique_ptr<T> make_unique( Args&& ...args )
+{
+    return std::unique_ptr<T>( new T( std::forward<Args>(args)... ) );
+}
+Dendrogram linkage(InMatrix& mat, const std::string& method) {
+	std::unique_ptr<Cluster> cluster;
+	if (method == "complete")
+		cluster = make_unique<CompleteCluster>(mat.getNumPints());
+	else if (method == "single")
+		cluster = make_unique<SingleCluster>(mat.getNumPints());
+	else if (method == "average")
+		cluster = make_unique<AverageCluster>(mat.getNumPints());
+	else
+		cluster = make_unique<AverageCluster>(mat.getNumPints());
+	cluster->createLeaves();
+	return cluster->clusterMatrix(&mat);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Program main
@@ -41,86 +39,40 @@ bool verbose = false;
 
 int main(int argc, char **argv) {
 
-	int linkage = 0;
 	char treeFileName[BUF_SIZE];
-
-	Timer timer;
-	timer.tic();
-
-	printf("\n============================== SparseHC ==============================\n");
-
-	printUsage();
-
-	fprintf(stderr, "\n==== Extract options ====\n");
-
 	if (!extractOptions("--tree=%s", treeFileName, argc, argv))
 		EXIT_MSG("The path to output tree file is required!");
-	printf("Output tree: %s\n", treeFileName);
 
-	unsigned num_points;
-	if (!extractOptions("-N=%u", &num_points, argc, argv)) {
-		num_points=10000;
+	char method[32];
+	if (!extractOptions("--linkage=%s", method, argc, argv))
+		strcat(method,"complete");
+
+	InMatrix inMat(0,"sorter.tmp","syscall nodirect unlink",64*1024*1024);
+
+	using std::chrono::duration_cast;
+	using std::chrono::milliseconds;
+	using time_point=std::chrono::steady_clock::time_point;
+	using std::chrono::steady_clock;
+	unsigned i,j;
+	float v;
+	time_point startRead = steady_clock::now();
+	while(std::cin>>i) {
+		std::cin>>j;
+		std::cin>>v;
+		inMat.push(i,j,v);
 	}
-	printf("num_points: %u\n", num_points);
-
-	char buf[BUF_SIZE];
-	if (extractOptions("--linkage=%s", buf, argc, argv)) {
-		if (strcmp(buf, "average") == 0) {
-			linkage = 0;
-			printf("Linkage: average\n");
-		} else if (strcmp(buf, "complete") == 0) {
-			linkage = 1;
-			printf("Linkage: complete\n");
-		} else if (strcmp(buf, "single") == 0) {
-			linkage = 2;
-			printf("Linkage: single\n");
-		} else if (strcmp(buf, "weighted") == 0) {
-			linkage = 3;
-			printf("Linkage: weighted\n");
-		} else
-			EXIT_MSG( "Invalid linkage option! ");
-	}
-	initProfiler(1, "cluster");
-
-	fprintf(stderr, "\n==== Read distance matrix from file ====\n");
-	InMatrix inMat(num_points,"sorter.tmp","syscall nodirect unlink",64*1024*1024);
-
-	std::vector<Point> points(num_points);
-	std::cout<<"inserting values: "<<std::flush;
-	for (unsigned p1 = 0; p1<num_points ; ++p1)
-	{
-		for(unsigned p2 = p1+1; p2<num_points ; ++p2) {
-			inMat.push(p1,p2,points[p1].rmsd(points[p2]));
-		}
-		if(p1%(num_points/10)==0) {
-			std::cout<<p1*100/num_points<<"% "<<std::flush;
-		}
-	}
-	std::cout<<std::endl;
+	time_point finishedRead = steady_clock::now();
+	double reading=duration_cast<milliseconds>(finishedRead - startRead).count()/1000.0;
+	std::cout<<"Reading RMSDs took: "<<reading<<" s"<<std::endl;
 	inMat.sort();
+	time_point finishedSort = steady_clock::now();
+	double sorting=duration_cast<milliseconds>(finishedSort-finishedRead).count()/1000.0;
+	std::cout<<"Sorting took: "<<sorting<<" s"<<std::endl;
+	linkage(inMat,method).print(treeFileName);
+	time_point finishedClust = steady_clock::now();
+	double clustering=duration_cast<milliseconds>(finishedClust-finishedSort).count()/1000.0;
+	std::cout<<"Clustering took: "<<clustering<<" s"<<std::endl;
 
-	inMat.stats();
-
-	fprintf(stderr, "\n==== Perform clustering ====\n");
-	Cluster * cluster = NULL;
-
-	if (linkage == 0)
-		cluster = new AverageCluster(inMat.getNumPints());
-	else if (linkage == 1)
-		cluster = new CompleteCluster(inMat.getNumPints());
-	else if (linkage == 2)
-		cluster = new SingleCluster(inMat.getNumPints());
-	else if (linkage == 3)
-		cluster = new AverageCluster(inMat.getNumPints());
-
-	cluster->createLeaves();
-	PROFILE("cluster", cluster->clusterMatrix(&inMat).print(treeFileName));
-
-	delete cluster;
-
-	printProfilerStats(); // print profile statistics before exit
-	timer.toc();
-	printf("Total time taken: = %.4lf seconds\n", timer.getLapse());
-	return EXIT_SUCCESS;
+	return 0;
 }
 
