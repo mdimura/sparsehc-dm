@@ -20,7 +20,7 @@ print ("finished loading ({}k): {}".format(N,finishedLoad-start))
 m=sparsehc_dm.InMatrix()
 N=traj.n_frames
 for i in range(0,N-1):
-  rmsds=md.rmsd(traj, traj, i)[i+1:].tolist()
+  rmsds=md.rmsd(traj, traj, i)[i+1:]
   sparsehc_dm.push(m,rmsds,i)
     
 #for i in range(0,N-1):

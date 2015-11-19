@@ -1,5 +1,6 @@
 #include <memory>
 #include <boost/python.hpp>
+#include <boost/python/numeric.hpp>
 #include "common.h"
 #include "inmatrix.h"
 #include "averagecluster.h"
@@ -48,16 +49,26 @@ void pushList(InMatrix& mat,const boost::python::list& list, int i)
 		mat.push(e);
 	}
 }
+void pushNp(InMatrix& mat,const boost::python::numeric::array& list, int i)
+{
+	Element e;
+	for(unsigned j=0; j<boost::python::len(list); ++j) {
+		float v=boost::python::extract<float>(list[j]);
+		e.update(i,j+i+1,v);
+		mat.push(e);
+	}
+}
 void (InMatrix::*push)(unsigned, unsigned, float) = &InMatrix::push;
 void (InMatrix::*pushElement)(Element) = &InMatrix::push;
 
 BOOST_PYTHON_MODULE(sparsehc_dm)
 {
+	boost::python::numeric::array::set_module_and_type("numpy", "ndarray");
 	using namespace boost::python;
 	//class_<InMatrix,boost::noncopyable>("InMatrix",init<unsigned,const std::string,const std::string,unsigned long>());
 	class_<InMatrix,boost::noncopyable>("InMatrix")
 			.def("push",push);
 	def("linkage", linkage);
-	def("push", pushList);
+	def("push", pushNp);
 
 }
