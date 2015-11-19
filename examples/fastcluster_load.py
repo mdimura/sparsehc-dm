@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import sys
 import time
-import scipy.io as sio
 import scipy.cluster as cluster
 from scipy.spatial.distance import squareform
 from fastcluster import linkage
