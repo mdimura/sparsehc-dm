@@ -1,11 +1,9 @@
-from distutils.core import setup
-from distutils.extension import Extension
-setup(name="sparsehc-dm",    
-      ext_modules=[
-                    Extension("sparsehc-dm",["sparsehc-dm_python.cpp",],
-                    library_dirs=["/usr/local/lib",],
-                    libraries=["",],
-                    include_dirs=[".","../src"],
-                    depends=[]),
-                    ]
-     )
+from distutils.core import setup, Extension
+import os
+setup (name = 'sparsehc_dm',
+       version = '',
+       description = 'Python wrapper for sparsehc_dm with STXXL sorting integrated',
+       packages=['sparsehc_dm'],
+       package_dir={'sparsehc_dm':''},
+       package_data={'sparsehc_dm':['sparsehc_dm.so',]},
+       )

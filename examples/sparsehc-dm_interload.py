@@ -1,11 +1,13 @@
-import sparsehc_dm
+from sparsehc_dm import sparsehc_dm
 import random
 import time
 import numpy as np
 import mdtraj as md
 
-N=10000
-traj_filename='aMD-148l-first10k.nc'
+N=1
+if len(sys.argv)>1:
+  N=int(sys.argv[1])
+traj_filename='aMD-148l-first{}k.nc'.format(N)
 top_filename='aMD-148l-all_1.pdb'
 
 first_frame = md.load_frame(traj_filename, 0,top=top_filename)

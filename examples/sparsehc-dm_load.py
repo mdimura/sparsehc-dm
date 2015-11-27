@@ -1,13 +1,16 @@
 import sys
 import gc
-import sparsehc_dm
+from sparsehc_dm import sparsehc_dm
 import random
 import time
 import mdtraj as md
 import numpy
+import json
 
-N=int(sys.argv[1])
-traj_filename='aMD-148l-first{}k.nc'.format(N)
+Nk=1
+if len(sys.argv)>1:
+  Nk=int(sys.argv[1])
+traj_filename='aMD-148l-first{}k.nc'.format(Nk)
 top_filename='aMD-148l-all_1.pdb'
 
 first_frame = md.load_frame(traj_filename, 0,top=top_filename)
@@ -18,28 +21,27 @@ traj=md.load(traj_filename,top=top_filename, atom_indices=atoms_to_keep)
 
 m=sparsehc_dm.InMatrix()
 finishedLoad=time.time()
-print ("finished loading ({}k): {}".format(N,finishedLoad-start))
+print ("finished loading ({}k): {}".format(Nk,finishedLoad-start))
 
-N=traj.n_frames
+Nframes=traj.n_frames
 rmsds=list()
-for i in range(0,N-1):
+for i in range(0,Nframes-1):
   rmsds=md.rmsd(traj, traj, i)[i+1:].tolist()
   sparsehc_dm.push(m,rmsds,i)
-  #if( (i+1)%20==0):
-    #sparsehc_dm.push(m,rmsds,i-19,N)
-    #rmsds=list()
 
 
-#for i in range(0,N-1):
+#for i in range(0,Nframes-1):
   #rmsds=md.rmsd(traj, traj, i)
-  #for j in range(i+1,N):
+  #for j in range(i+1,Nframes):
     #m.push(i,j,float(rmsds[j]))
     
 finishedRMSD=time.time()
 print ("finished rmsd: {}".format(finishedRMSD-finishedLoad))
 
+#Z-matrix contains the linkage history, see more at http://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.hierarchy.linkage.html#scipy.cluster.hierarchy.linkage
 Z=sparsehc_dm.linkage(m,"complete")
 finishedClust=time.time()
+
+#One would probably like to save the Z-matrix for the future, so that there is no need to redo the clustering
+open('z_sparsehc-dm_load_{}.json'.format(Nk), 'w').write(json.dumps(Z))
 print ("finished clustering: {}".format(finishedClust-finishedRMSD))
-#for r in Z:
-  #print("{}\t{}\t{}\t{}".format(r[0],r[1],r[2],r[3]))

@@ -22,7 +22,10 @@ target_link_libraries(sparsehc-dm ${LIBS})
 add_definitions(-std=c++11)
 
 file(GLOB SHARED_SOURCES src/averagecluster.cpp src/cluster.cpp src/common.cpp src/completecluster.cpp src/dendrogram.cpp src/inmatrix.cpp src/matrix.cpp src/singlecluster.cpp)
+add_custom_target(python_init COMMAND touch __init__.py)
 ADD_LIBRARY(sparsehc_dm SHARED python/sparsehc-dm_python.cpp ${SHARED_SOURCES})
+add_dependencies(sparsehc_dm python_init)
 target_link_libraries(sparsehc_dm ${LIBS})
 set_target_properties(sparsehc_dm PROPERTIES PREFIX "" SUFFIX ".so")
 
+install(CODE "execute_process(COMMAND python ../python/setup.py install --prefix=${CMAKE_INSTALL_PREFIX} WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})")
