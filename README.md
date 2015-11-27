@@ -3,7 +3,7 @@ Sparsehc-dm is a python wrapper for sparcehc distance matrix clustering algorith
 Usage example:
 ```python
 import mdtraj as md
-import sparsehc_dm
+from sparsehc_dm import sparsehc_dm
 
 traj_filename='traj.nc'
 top_filename='top.pdb'
