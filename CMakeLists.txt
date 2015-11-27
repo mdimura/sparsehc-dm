@@ -22,6 +22,7 @@ target_link_libraries(sparsehc-dm ${LIBS})
 add_definitions(-std=c++11)
 
 file(GLOB SHARED_SOURCES src/averagecluster.cpp src/cluster.cpp src/common.cpp src/completecluster.cpp src/dendrogram.cpp src/inmatrix.cpp src/matrix.cpp src/singlecluster.cpp)
-ADD_LIBRARY(sparsehc_dm SHARED sparsehc-dm_python.cpp ${SHARED_SOURCES})
+ADD_LIBRARY(sparsehc_dm SHARED python/sparsehc-dm_python.cpp ${SHARED_SOURCES})
 target_link_libraries(sparsehc_dm ${LIBS})
-set_target_properties(sparsehc_dm PROPERTIES PREFIX "")
+set_target_properties(sparsehc_dm PROPERTIES PREFIX "" SUFFIX ".so")
+

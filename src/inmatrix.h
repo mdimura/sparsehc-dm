@@ -47,9 +47,13 @@ struct InMatrix: public Matrix {
 		push(Element(row,col,value));
 	}
 	void push(Element e) {
-		threshold=threshold<e.value?nextafterf(e.value,e.value+100.0f):threshold;
+		threshold=threshold<e.value?e.value:threshold;
 		sorter.push(std::move(e));
 	}
+	/*void push(float v) {
+		threshold=threshold<v?v:threshold;
+		sorter.push(std::move(e));
+	}*/
 
 	/*void pushvec(std::vector<float> v,unsigned i) {
 		for(unsigned j=0; j<v.size(); ++j) {
@@ -60,6 +64,7 @@ struct InMatrix: public Matrix {
 		}
 	}*/
 	void sort() {
+		threshold=nextafterf(threshold,threshold+100.0f);
 		sorter.sort();
 		numPoints=(1L+sqrt(1L+sorter.size()*8L))/2L;
 	}

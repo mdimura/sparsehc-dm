@@ -1,6 +1,7 @@
 #include <memory>
 #include <boost/python.hpp>
 #include <boost/python/numeric.hpp>
+#include <boost/python/stl_iterator.hpp>
 #include "common.h"
 #include "inmatrix.h"
 #include "averagecluster.h"
@@ -40,23 +41,37 @@ boost::python::list linkage(InMatrix& mat, const std::string& method) {
 
 }
 
-void pushList(InMatrix& mat,const boost::python::list& list, int i)
+/*TODO: improve pushList() performance by introducing a buffer to first copy values
+from Python::list and then push them to InMatrix in a separate thread.
+*/
+template<typename T>
+void pushList(InMatrix& mat,const T& list, unsigned i/*,const unsigned rowLength*/)
 {
-	Element e;
-	for(unsigned j=0; j<boost::python::len(list); ++j) {
-		float v=boost::python::extract<float>(list[j]);
-		e.update(i,j+i+1,v);
-		mat.push(e);
+	/*const unsigned n=boost::python::len(list);
+	std::vector<float> vec;
+	vec.resize(n);*/
+	unsigned j=i+1;
+	std::for_each(boost::python::stl_input_iterator<float>(list),
+		       boost::python::stl_input_iterator<float>(),
+		       [&mat,&i,&j](const float& v) {
+				mat.push(Element(i,j++,v));
+			 });
+	/*std::copy(boost::python::stl_input_iterator<float>(list),
+		   boost::python::stl_input_iterator<float>(),vec.begin());
+
+	auto it=boost::python::stl_input_iterator<float>(list);
+	while(it!=boost::python::stl_input_iterator<float>()) {
+		for(unsigned j=i+1; j<rowLength; j++) {
+			//std::cout<<"i="<<i<<" j="<<j<<" n="<<n<<std::endl;
+			vec.emplace_back(i,j,*it++);
+		}
+		++i;
 	}
-}
-void pushNp(InMatrix& mat,const boost::python::numeric::array& list, int i)
-{
-	Element e;
-	for(unsigned j=0; j<boost::python::len(list); ++j) {
-		float v=boost::python::extract<float>(list[j]);
-		e.update(i,j+i+1,v);
-		mat.push(e);
-	}
+	{ vec.emplace_back(i,i+1+j++,v);}
+	mat.push(Element(i,i+1+j++,v));
+	for(auto& e:vec) {
+		mat.push(std::move(e));
+	}*/
 }
 void (InMatrix::*push)(unsigned, unsigned, float) = &InMatrix::push;
 void (InMatrix::*pushElement)(Element) = &InMatrix::push;
@@ -69,6 +84,8 @@ BOOST_PYTHON_MODULE(sparsehc_dm)
 	class_<InMatrix,boost::noncopyable>("InMatrix")
 			.def("push",push);
 	def("linkage", linkage);
-	def("push", pushNp);
+	//boost::python::list
+	//boost::python::numeric::array
+	def("push", pushList<boost::python::list>);
 
 }

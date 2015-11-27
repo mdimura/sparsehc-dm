@@ -21,7 +21,7 @@ for i in range(0,N-1):
 Z=linkage(D, method='complete',preserve_input=False)
 ```
 ###Instalation
-####Prerequisits: boost graph and stxxl library
+####Prerequisites: boost graph and stxxl library
 ```
 sudo apt-get install libboost-graph-dev libstxxl-dev libstxxl1
 ```

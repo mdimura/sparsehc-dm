@@ -1,16 +1,17 @@
 #!/bin/bash
-touch fastcluster_load.txt  sparsehc-dm_load.txt sparsehc-dm_load_pyRMSD.txt
+
 for Nk in 10 20 40 80
 do
-  /usr/bin/time -v python fastcluster_load.py $Nk 2>&1 | grep 'finished\|Maximum' >> fastcluster_load.txt 
+  /usr/bin/time -v python fastcluster_load.py $Nk 2>&1 | grep 'finished\|Maximum' >> fastcluster_perf.txt 
 done
 
-for Nk in 10 20 40 80 100 200 400
+for Nk in 10 20 40
 do
-  /usr/bin/time -v python sparsehc-dm_load.py $Nk 2>&1 | grep 'finished\|Maximum' >> sparsehc-dm_load.txt 
+ ./cpptraj_cluster.sh $Nk 2>&1 >> cpptraj_perf.txt 
 done
 
-for Nk in 10 20 40 80 100 200 400
+for Nk in 10 20 40 80 100 200 #400 700
 do
-  /usr/bin/time -v python sparsehc-dm_load_pyRMSD.py $Nk 2>&1 | grep 'finished\|Maximum' >> sparsehc-dm_load_pyRMSD.txt 
+  /usr/bin/time -v python sparsehc-dm_load.py $Nk 2>&1 | grep 'finished\|Maximum' >> sparsehc-dm_perf.txt 
 done
+
