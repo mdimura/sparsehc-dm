@@ -6,6 +6,7 @@ from scipy.spatial.distance import squareform
 from fastcluster import linkage
 import mdtraj as md
 import numpy as np
+import json
 
 Nk=1
 if len(sys.argv)>1:
@@ -41,5 +42,5 @@ Z=linkage(D, method='complete',preserve_input=False)
 finishedClust=time.time()
 
 #One would probably like to save the Z-matrix for the future, so that there is no need to redo the clustering
-open('z_sparsehc-dm_load_{}k.json'.format(Nk), 'w').write(json.dumps(Z))
+open('z_sparsehc-dm_load_{}k.json'.format(Nk), 'w').write(json.dumps(Z.tolist()))
 print ("finished clustering: {}".format(finishedClust-finishedRMSD))
