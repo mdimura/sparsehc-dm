@@ -27,7 +27,7 @@ sudo apt-get install libboost-graph-dev libstxxl-dev libstxxl1
 ```
 ####Building:
 ```
-git clone https://github.com/Burning-Daylight/sparsehc-dm.git sparcehc-dm
+git clone https://github.com/Burning-Daylight/sparsehc-dm.git sparsehc-dm
 cd sparsehc-dm
 mkdir build
 cd build
