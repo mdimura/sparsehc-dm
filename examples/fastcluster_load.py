@@ -42,5 +42,5 @@ Z=linkage(D, method='complete',preserve_input=False)
 finishedClust=time.time()
 
 #One would probably like to save the Z-matrix for the future, so that there is no need to redo the clustering
-open('z_sparsehc-dm_load_{}k.json'.format(Nk), 'w').write(json.dumps(Z.tolist()))
+open('z_fastcluster_load_{}k.json'.format(Nk), 'w').write(json.dumps(Z.tolist()))
 print ("finished clustering: {}".format(finishedClust-finishedRMSD))

@@ -14,8 +14,6 @@
 #include <limits>
 using namespace std;
 
-#define EPSILON 1.0e-6
-
 struct Element {
 	uint row;
 	uint col;
@@ -40,13 +38,14 @@ struct Element {
 	}
 
 	bool operator <(const Element &e) const {
-		if (fabsf(value - e.value) < EPSILON) {
-			if (row == e.row)
-				return col < e.col;
-			else
-				return row < e.row;
-		} else
+		if(value==e.value) {
+			if(row==e.row) {
+				return col<e.col;
+			} else return row<e.row;
+		}
+		else {
 			return value < e.value;
+		}
 	}
 	inline bool operator == (const Element& b) const
 	{

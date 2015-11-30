@@ -254,7 +254,7 @@ bool AverageCluster::getCandidate(float &minInexact, float &minExact, AverageVer
 		}
 	}
 
-	return (minExact < 1.0f) && (minExact < minInexact || fabsf(minExact - minInexact) < EPSILON);
+	return (minExact < 1.0f) && (minExact < minInexact || (minExact == minInexact) );
 }
 
 Dendrogram AverageCluster::clusterMatrix(InMatrix * mat) {
