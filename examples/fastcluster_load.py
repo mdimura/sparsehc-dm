@@ -2,7 +2,7 @@
 import sys
 import time
 import scipy.cluster as cluster
-from scipy.spatial.distance import squareform
+#from scipy.spatial.distance import squareform
 from fastcluster import linkage
 import mdtraj as md
 import numpy as np
