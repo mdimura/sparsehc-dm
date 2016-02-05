@@ -8,17 +8,16 @@ from sparsehc_dm import sparsehc_dm
 traj_filename='traj.nc'
 top_filename='top.pdb'
 
-first_frame = md.load_frame(traj_filename, 0,top=top_filename)
-atoms_to_keep = [a.index for a in first_frame.topology.atoms if a.name == 'CA']
-traj=md.load(traj_filename,top=top_filename, atom_indices=atoms_to_keep)
+traj=md.load(traj_filename,top=top_filename)
 
 m=sparsehc_dm.InMatrix()
 N=traj.n_frames
-for i in range(0,N-1):
-  rmsds=md.rmsd(traj, traj, i)[i+1:].astype(float)
-  sparsehc_dm.push(m,rmsds,i)
+for i in range(0,Nframes-1):
+  rmsds=md.rmsd(traj, traj, i)
+  for j in range(i+1,Nframes):
+    m.push(i,j,float(rmsds[j]))
 
-Z=linkage(D, method='complete',preserve_input=False)
+Z=sparsehc_dm.linkage(m,"complete")
 ```
 ###Instalation
 ####Prerequisites: boost graph and stxxl library
