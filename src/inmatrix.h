@@ -35,8 +35,7 @@ struct InMatrix: public Matrix {
 	uint pos;
 
 
-	InMatrix(unsigned numpoints=0, const std::string cachefile="sorter.tmp",
-		 const std::string cacheOptions="syscall nodirect unlink",
+	InMatrix(unsigned numpoints=0,
 		 unsigned long ramUse=1L*1024*1024*1024);
 
 	~InMatrix() {

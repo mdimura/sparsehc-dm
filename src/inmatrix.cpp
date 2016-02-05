@@ -7,15 +7,9 @@
 
 #include "inmatrix.h"
 
-InMatrix::InMatrix(unsigned numpoints, const string cachefile,
-		   const string cacheOptions, unsigned long ramUse):sorter(Cmp(),ramUse) {
+InMatrix::InMatrix(unsigned numpoints, unsigned long ramUse):sorter(Cmp(),ramUse) {
 
 	//set Matrix::threshold, numPoints
-	stxxl::config * cfg = stxxl::config::get_instance();
-	unsigned long diskSize=numpoints?12L*numpoints*(numpoints-1)/2:2L*1024L*1024L*1024L;
-	stxxl::disk_config disk1(cachefile, diskSize, cacheOptions);
-	//disk1.direct = stxxl::disk_config::DIRECT_OFF;
-	cfg->add_disk(disk1);
 }
 
 bool InMatrix::getNext(uint &row, uint &col, float &value) {
