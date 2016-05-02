@@ -7,9 +7,11 @@
 
 #include "inmatrix.h"
 
-InMatrix::InMatrix(unsigned numpoints, unsigned long ramUse):sorter(Cmp(),ramUse) {
+InMatrix::InMatrix(unsigned long ramUse):sorter(Cmp(),ramUse) {
 
 	//set Matrix::threshold, numPoints
+	//numpoints=0
+	std::cerr<<"Using "<<ramUse/1024.0/1024.0/1024.0<<"GB RAM for on-disc sorting."<<std::endl;
 }
 
 bool InMatrix::getNext(uint &row, uint &col, float &value) {

@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
 	if (!extractOptions("--linkage=%s", method, argc, argv))
 		strcat(method,"complete");
 
-	InMatrix inMat(0,64*1024*1024);
+	InMatrix inMat(64*1024*1024);
 
 	using std::chrono::duration_cast;
 	using std::chrono::milliseconds;

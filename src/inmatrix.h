@@ -35,8 +35,7 @@ struct InMatrix: public Matrix {
 	uint pos;
 
 
-	InMatrix(unsigned numpoints=0,
-		 unsigned long ramUse=1L*1024*1024*1024);
+	InMatrix(unsigned long ramUse=1L*1024*1024*1024);
 
 	~InMatrix() {
 		pos = 0;

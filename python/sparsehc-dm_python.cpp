@@ -81,7 +81,8 @@ BOOST_PYTHON_MODULE(sparsehc_dm)
 	boost::python::numeric::array::set_module_and_type("numpy", "ndarray");
 	using namespace boost::python;
 	//class_<InMatrix,boost::noncopyable>("InMatrix",init<unsigned,const std::string,const std::string,unsigned long>());
-	class_<InMatrix,boost::noncopyable>("InMatrix")
+	class_<InMatrix,boost::noncopyable>("InMatrix", init<unsigned long>())
+			.def(init<optional<unsigned long>>())
 			.def("push",push);
 	def("linkage", linkage);
 	//boost::python::list
