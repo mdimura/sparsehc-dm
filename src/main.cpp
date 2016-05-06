@@ -36,6 +36,32 @@ Dendrogram linkage(InMatrix& mat, const std::string& method) {
 // Program main
 ////////////////////////////////////////////////////////////////////////////////
 bool verbose = false;
+void test(const unsigned nPoints,const long maxRam=2L*1024*1024*1024)
+{
+	InMatrix inMat(maxRam);
+	using std::chrono::duration_cast;
+	using std::chrono::milliseconds;
+	using time_point=std::chrono::steady_clock::time_point;
+	using std::chrono::steady_clock;
+	time_point startRead = steady_clock::now();
+	for (unsigned i=0; i<nPoints; ++i) {
+		for (unsigned j=i+1; j<nPoints; ++j) {
+			inMat.push(i,j,10.0*(j-i)/nPoints);
+		}
+	}
+	time_point finishedRead = steady_clock::now();
+	double reading=duration_cast<milliseconds>(finishedRead - startRead).count()/1000.0;
+	std::cout<<"Reading RMSDs took: "<<reading<<" s"<<std::endl;
+	inMat.sort();
+	time_point finishedSort = steady_clock::now();
+	double sorting=duration_cast<milliseconds>(finishedSort-finishedRead).count()/1000.0;
+	std::cout<<"Sorting took: "<<sorting<<" s"<<std::endl;
+	Dendrogram d=linkage(inMat,"complete");
+	d.print("test_linkage.dat");
+	time_point finishedClust = steady_clock::now();
+	double clustering=duration_cast<milliseconds>(finishedClust-finishedSort).count()/1000.0;
+	std::cout<<"Clustering took: "<<clustering<<" s"<<std::endl;
+}
 
 int main(int argc, char **argv) {
 
@@ -73,6 +99,7 @@ int main(int argc, char **argv) {
 	double clustering=duration_cast<milliseconds>(finishedClust-finishedSort).count()/1000.0;
 	std::cout<<"Clustering took: "<<clustering<<" s"<<std::endl;
 
+	//test(40000);
 	return 0;
 }
 
