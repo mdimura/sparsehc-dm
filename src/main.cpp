@@ -74,7 +74,12 @@ int main(int argc, char **argv) {
 	if (!extractOptions("--linkage=%s", method, argc, argv))
 		strcat(method,"complete");
 
-	unsigned maxRam=2L*1024*1024*1024;
+	unsigned long maxRam=2L*1024*1024*1024;
+	int ramMb=0;
+	if (extractOptions("--ramMb=%d", &ramMb, argc, argv))
+		maxRam=1024uL*1024uL*ramMb;
+	maxRam=std::max(64uL*1024*1024,maxRam);
+
 	InMatrix inMat(maxRam);
 
 	using std::chrono::duration_cast;
