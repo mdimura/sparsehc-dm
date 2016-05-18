@@ -36,8 +36,9 @@ Dendrogram linkage(InMatrix& mat, const std::string& method) {
 // Program main
 ////////////////////////////////////////////////////////////////////////////////
 bool verbose = false;
-void test(const unsigned nPoints,const long maxRam=2L*1024*1024*1024)
+void test(const unsigned nPoints,const long maxRam=4L*1024*1024*1024)
 {
+	std::cout<<"Clustering "<<nPoints<<" points."<<std::endl;
 	InMatrix inMat(maxRam);
 	using std::chrono::duration_cast;
 	using std::chrono::milliseconds;
@@ -73,7 +74,8 @@ int main(int argc, char **argv) {
 	if (!extractOptions("--linkage=%s", method, argc, argv))
 		strcat(method,"complete");
 
-	InMatrix inMat(64*1024*1024);
+	unsigned maxRam=2L*1024*1024*1024;
+	InMatrix inMat(maxRam);
 
 	using std::chrono::duration_cast;
 	using std::chrono::milliseconds;
@@ -99,7 +101,8 @@ int main(int argc, char **argv) {
 	double clustering=duration_cast<milliseconds>(finishedClust-finishedSort).count()/1000.0;
 	std::cout<<"Clustering took: "<<clustering<<" s"<<std::endl;
 
-	//test(40000);
+
+	//test(350000);
 	return 0;
 }
 

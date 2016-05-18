@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.8)
 project (sparsehc-dm)
 
-if(NOT CMAKE_BUILD_TYPE) 
+if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif(NOT CMAKE_BUILD_TYPE)
 
@@ -21,8 +21,8 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
 include_directories(src)
 file(GLOB SOURCES "src/*.cpp")
-add_executable(sparsehc-dm ${SOURCES})
-target_link_libraries(sparsehc-dm ${LIBS})
+add_executable(cluster-sdm ${SOURCES})
+target_link_libraries(cluster-sdm ${LIBS})
 add_definitions(-std=c++11)
 
 file(GLOB SHARED_SOURCES src/averagecluster.cpp src/cluster.cpp src/common.cpp src/completecluster.cpp src/dendrogram.cpp src/inmatrix.cpp src/matrix.cpp src/singlecluster.cpp)
@@ -33,3 +33,4 @@ target_link_libraries(sparsehc_dm ${LIBS})
 set_target_properties(sparsehc_dm PROPERTIES PREFIX "" SUFFIX ".so")
 
 install(CODE "execute_process(COMMAND python ../python/setup.py install --prefix=${CMAKE_INSTALL_PREFIX} WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})")
+install(TARGETS cluster-sdm RUNTIME DESTINATION bin)
