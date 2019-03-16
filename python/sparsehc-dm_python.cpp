@@ -1,6 +1,6 @@
 #include <memory>
 #include <boost/python.hpp>
-#include <boost/python/numeric.hpp>
+#include <boost/python/numpy.hpp>
 #include <boost/python/stl_iterator.hpp>
 #include "common.h"
 #include "inmatrix.h"
